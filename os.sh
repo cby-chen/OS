@@ -85,7 +85,7 @@ function aptset(){
 function restartset(){
     echo "===================禁用ctrl+alt+del重启===================="
     rm -rf /usr/lib/systemd/system/ctrl-alt-del.target
-    action "完成禁用ctrl+alt+del重启" /bin/true
+    echo "完成禁用ctrl+alt+del重启"
     echo "==========================================================="
     sleep 3
 }
@@ -112,7 +112,7 @@ EOF
     else
     echo "优化项已存在。"
     fi
-    action "完成history优化" /bin/true
+    echo "完成history优化" 
     echo "==========================================================="
     sleep 3
 }
@@ -210,6 +210,19 @@ EOF
     sleep 3
 }
 
+function sshset(){
+    echo "========================root登录优化========================"
+    echo "生产环境不建议开启 设置root密码"
+    read -p "输入root密码" rootpw
+    echo "root:$rootpw" |chpasswd
+    echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config
+    systemctl restart sshd
+    echo "root密码修改为$rootpw"
+    echo "==========================================================="
+    sleep 3
+}
+
+
 function allin() {
     if [ "$os" = "\"centos\"" ]; then
         selinuxset
@@ -221,6 +234,7 @@ function allin() {
         helloset
     fi
     if [ "$os" = "ubuntu" ]; then
+        sshset
         ufwset
         limitsset
         aptset
@@ -286,6 +300,8 @@ function setun() {
     echo " -------------"
     echo -e "  ${GREEN}9.${PLAIN}  欢迎界面优化"
     echo " -------------"
+    echo -e "  ${GREEN}10.${PLAIN} 设置root密码"
+    echo " -------------"    
     echo -e "  ${GREEN}0.${PLAIN}  退出"
     echo " -------------"
     
@@ -345,6 +361,14 @@ function setun() {
             ;;
         9)
             helloset
+            ;;
+        10)
+            if [ "$os" = "\"centos\"" ]; then
+                echo 'CentOS无需设置'
+            fi
+            if [ "$os" = "ubuntu" ]; then
+                sshset
+            fi
             ;;
         *)
             colorEcho $RED " 请选择正确的操作！"
