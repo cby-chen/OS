@@ -377,4 +377,10 @@ function setun() {
     esac
 }
 
-menu
+
+if [ $(id -u) -eq 0 ];then
+	menu
+else
+	echo "非root用户!请使用root用户！！！"
+    exit 1
+fi
