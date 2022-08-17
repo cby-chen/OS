@@ -27,7 +27,7 @@ function selinuxset(){
     grep SELINUX=disabled /etc/sysconfig/selinux
     getenforce
  fi
-    action "完成禁用SELINUX" /bin/true
+    echo "完成禁用SELINUX"
     echo "==========================================================="
     sleep 3
 }
@@ -62,7 +62,7 @@ function limitsset(){
     echo '* hard nofile 65536'
     echo '* soft nproc 65536'
     echo '* hard nproc 65536'
-    } >> file
+    } >> /etc/security/limits.conf
     echo '查看配置内容'
     cat /etc/security/limits.conf
     echo '设置软硬资源限制'
